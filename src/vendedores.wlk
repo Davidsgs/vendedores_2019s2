@@ -33,6 +33,8 @@ class Vendedores {
 	method esFirme(){
 		return self.puntosDeCertificados() >= 30
 	}
+	
+	method esInfluyente()
 }
 
 class VendedorFijo inherits Vendedores{
@@ -40,6 +42,10 @@ class VendedorFijo inherits Vendedores{
 	
 	override method puedeTrabajarEnCiudad(unaCiudad){
 		return ciudad == unaCiudad
+	}
+	
+	override method esInfluyente(){
+		return false
 	}
 }
 
@@ -57,10 +63,23 @@ class VendedorViajante inherits Vendedores{
 	override method puedeTrabajarEnCiudad(unaCiudad){
 		return provincias.any({prov => prov == unaCiudad.provincia()})
 	}
+	
+	method poblacionTotalEnProvincias(){
+		return provincias.sum({provin => provin.poblacion()})
+	}
+	
+	override method esInfluyente(){
+		return  self.poblacionTotalEnProvincias() >= 10000000
+	}
+	
 }
 
 class ComercioCorresponsal inherits Vendedores{
 	var property ciudades = #{}
+	
+	method ponerSucursalesEn(conjuntoDeCiudades){
+		ciudades.addAll(conjuntoDeCiudades)
+	}
 	
 	method ponerSucursalEn(unaCiudad){
 		ciudades.add(unaCiudad)
@@ -68,5 +87,20 @@ class ComercioCorresponsal inherits Vendedores{
 	
 	override method puedeTrabajarEnCiudad(unaCiudad){
 		return ciudades.any({ciudad => ciudad == unaCiudad})
+	}
+	
+	method cantidadCiudades(){
+		return ciudades.size()
+	}
+	
+	method cantidadProvinciasConSucursal(){
+		const provincias = #{}
+		provincias.addAll(ciudades.map({ciudad => ciudad.provincia()}))
+		return provincias.size()
+	}
+	
+	override method esInfluyente(){
+		return self.cantidadCiudades() >= 5 or 
+		self.cantidadProvinciasConSucursal() >= 3
 	}
 }

@@ -6,10 +6,34 @@ const buenosAires = new Provincia(nombre = "Buenos Aires", poblacion = 2890000)
 
 const cordoba = new Provincia(nombre = "Córdoba", poblacion = 13910000)
 
-// Ciudad
+const santaFe = new Provincia(nombre = "Santa Fe", poblacion = 3369000)
+
+const entreRios = new Provincia(nombre = "Entre Rios", poblacion = 1308000)
+
+// Ciudades
 const villaTesei = new Ciudad(nombre = "Villa Tesei", provincia = buenosAires)
 
 const ciudadCordoba = new Ciudad(nombre = "Ciudad de Córdoba", provincia = cordoba)
+
+const chivilcoy = new Ciudad(nombre = "Chivilcoy", provincia = buenosAires)
+
+const lobos = new Ciudad(nombre = "Lobos", provincia = buenosAires)
+
+const bragado = new Ciudad(nombre = "Bragado", provincia = buenosAires)
+
+const pergamino = new Ciudad(nombre = "Pergamino", provincia = buenosAires)
+
+const zarate = new Ciudad(nombre = "Zárate", provincia = buenosAires)
+
+const rosario = new Ciudad(nombre = "Rosario", provincia = santaFe)
+
+const rafaela = new Ciudad(nombre = "Rafaela", provincia = santaFe)
+
+const sanFrancisco = new Ciudad(nombre = "San Francisco", provincia = cordoba)
+
+const diamante = new Ciudad(nombre = "Diamante", provincia = entreRios)
+
+const amstrong = new Ciudad(nombre = "Amstrong", provincia = santaFe)
 
 // Ceritificados
 const certificado1 = new Certificado(cantidadPuntos = 10, esSobreProductos = true)
@@ -39,28 +63,60 @@ describe "Test vendedores: Primera parte." {
 		// Se establece una sucursal en Villa Tesei
 		comercio.ponerSucursalEn(villaTesei)
 	}
-	
-	test "Pueden trabajar en Villa Tesei y no en Ciudad de Cordoba"{
+
+	test "Pueden trabajar en Villa Tesei y no en Ciudad de Cordoba" {
 		assert.that(miguel.puedeTrabajarEnCiudad(villaTesei))
 		assert.that(julio.puedeTrabajarEnCiudad(villaTesei))
 		assert.that(comercio.puedeTrabajarEnCiudad(villaTesei))
 		assert.notThat(miguel.puedeTrabajarEnCiudad(ciudadCordoba))
 		assert.notThat(julio.puedeTrabajarEnCiudad(ciudadCordoba))
-		assert.notThat(comercio.puedeTrabajarEnCiudad(ciudadCordoba))	
+		assert.notThat(comercio.puedeTrabajarEnCiudad(ciudadCordoba))
 	}
-	
-	test "Solo miguel es vendedor vertasil."{
+
+	test "Solo miguel es vendedor vertasil." {
 		assert.that(miguel.esVersatil())
 		assert.notThat(julio.esVersatil())
 		assert.notThat(comercio.esVersatil())
-	} 
-	
-	test "Solo miguel es firme"{
+	}
+
+	test "Solo miguel es firme" {
 		assert.that(miguel.esFirme())
-		assert.equals(35,miguel.puntosDeCertificados())
+		assert.equals(35, miguel.puntosDeCertificados())
 		assert.notThat(julio.esFirme())
 		assert.notThat(comercio.esFirme())
 	}
 
+}
+
+describe "Test vendedores: Segunda parte" {
+	
+	fixture{
+		julio.habilitarEnProvincia(santaFe)
+		julio.habilitarEnProvincia(buenosAires)
+	}
+	
+	test "Ningún vendedor fijo es influyente."{
+		assert.notThat(miguel.esInfluyente())
+	}
+	
+	test "Viajante es influyente."{
+		assert.notThat(julio.esInfluyente())
+		assert.equals(6259000,julio.poblacionTotalEnProvincias())
+	}
+	
+	test "Si, Es comercio influyente por cantidad de ciudades." {
+		comercio.ponerSucursalesEn([ chivilcoy, lobos, bragado, pergamino, zarate ])
+		assert.that(comercio.esInfluyente())
+	}
+
+	test "Si, Es comercio influyente por cantidad de provincias." {
+		comercio.ponerSucursalesEn([ rosario, rafaela, sanFrancisco, diamante ])
+		assert.that(comercio.esInfluyente())
+	}
+	
+	test "No es comercio influyente." {
+		comercio.ponerSucursalesEn([ rosario, rafaela, amstrong, diamante ])
+		assert.notThat(comercio.esInfluyente())
+	}
 }
 
