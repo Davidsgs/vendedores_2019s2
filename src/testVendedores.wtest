@@ -1,0 +1,66 @@
+import geografia.*
+import vendedores.*
+
+// Provincias
+const buenosAires = new Provincia(nombre = "Buenos Aires", poblacion = 2890000)
+
+const cordoba = new Provincia(nombre = "Córdoba", poblacion = 13910000)
+
+// Ciudad
+const villaTesei = new Ciudad(nombre = "Villa Tesei", provincia = buenosAires)
+
+const ciudadCordoba = new Ciudad(nombre = "Ciudad de Córdoba", provincia = cordoba)
+
+// Ceritificados
+const certificado1 = new Certificado(cantidadPuntos = 10, esSobreProductos = true)
+
+const certificado2 = new Certificado(cantidadPuntos = 20, esSobreProductos = false)
+
+const certificado3 = new Certificado(cantidadPuntos = 5, esSobreProductos = false)
+
+// Vendedor Fijo
+const miguel = new VendedorFijo(ciudad = villaTesei)
+
+// Vendedor Viajante
+const julio = new VendedorViajante()
+
+// Comercio Corresponsal
+const comercio = new ComercioCorresponsal()
+
+describe "Test vendedores: Primera parte." {
+
+	fixture {
+		// le das los certificados a Miguel
+		miguel.darCertificado(certificado1)
+		miguel.darCertificado(certificado2)
+		miguel.darCertificado(certificado3)
+		// Se habilita a Julio para trabajar en Buenos Aires
+		julio.habilitarEnProvincia(buenosAires)
+		// Se establece una sucursal en Villa Tesei
+		comercio.ponerSucursalEn(villaTesei)
+	}
+	
+	test "Pueden trabajar en Villa Tesei y no en Ciudad de Cordoba"{
+		assert.that(miguel.puedeTrabajarEnCiudad(villaTesei))
+		assert.that(julio.puedeTrabajarEnCiudad(villaTesei))
+		assert.that(comercio.puedeTrabajarEnCiudad(villaTesei))
+		assert.notThat(miguel.puedeTrabajarEnCiudad(ciudadCordoba))
+		assert.notThat(julio.puedeTrabajarEnCiudad(ciudadCordoba))
+		assert.notThat(comercio.puedeTrabajarEnCiudad(ciudadCordoba))	
+	}
+	
+	test "Solo miguel es vendedor vertasil."{
+		assert.that(miguel.esVersatil())
+		assert.notThat(julio.esVersatil())
+		assert.notThat(comercio.esVersatil())
+	} 
+	
+	test "Solo miguel es firme"{
+		assert.that(miguel.esFirme())
+		assert.equals(35,miguel.puntosDeCertificados())
+		assert.notThat(julio.esFirme())
+		assert.notThat(comercio.esFirme())
+	}
+
+}
+
